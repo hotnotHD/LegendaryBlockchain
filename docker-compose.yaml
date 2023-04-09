@@ -1,0 +1,39 @@
+version: "3.8"
+
+services:
+  node1:
+    image: user/blockchain
+    container_name: node1
+    network_mode: host
+    command: "5000"
+    stdin_open: true
+    tty: true
+
+  node3:
+    image: user/blockchain
+    container_name: node3
+    network_mode: host
+    command: "5002"
+    stdin_open: true
+    tty: true
+
+  node2:
+    image: user/blockchain
+    container_name: node2
+    network_mode: host
+    command: "5001"
+    stdin_open: true
+    tty: true
+
+  node4:
+    image: user/blockchain
+    container_name: node4
+    network_mode: host
+    command: "5003"
+    stdin_open: true
+    tty: true
+
+    depends_on:
+      - node1
+      - node2
+      - node3
