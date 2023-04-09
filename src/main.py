@@ -1,5 +1,7 @@
+import grequests
 from flask import Flask, request
 import requests
+import argparse
 import string
 import random
 from hashlib import sha256
@@ -154,3 +156,48 @@ def start_slave():
 @app.route('/data')
 def data():
     return f'{blk.blocks}'
+
+def emulation():
+    url = url_l + ":" + str(5000) + "/start_mine"
+    requests.post(url)
+
+    mine_ch = ["http://localhost:5000/mine", "http://localhost:5001/mine", "http://localhost:5002/mine"]
+    time.sleep(1)
+
+    list_of_hungreds = []
+
+    for i in range(500):
+        list_of_hungreds.append(random.choice(mine_ch))
+
+    rs = (grequests.post(u) for u in list_of_hungreds)
+    grequests.map(rs)
+    time.sleep(2)
+    for i in range(3):
+        time.sleep(1)
+        requests.post(mine_ch[i])
+
+    print("NODE 1:\n")
+    rq = requests.get("http://localhost:5000/data")
+    print(rq.content.decode("UTF-8"))
+
+    print("NODE 2:\n")
+    rq = requests.get("http://localhost:5001/data")
+    print(rq.content.decode("UTF-8"))
+
+    print("NODE 3: \n")
+    rq = requests.get("http://localhost:5002/data")
+    print(rq.content.decode("UTF-8"))
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('host', type=int)
+    host_port = parser.parse_args().host
+
+    blk.address = host_port
+
+    if host_port != 5003:
+        blk.addresses.remove(host_port)
+        app.run('localhost', host_port)
+    else:
+        emulation()
