@@ -1,6 +1,7 @@
 import string
 import random
 from hashlib import sha256
+import json
 import time
 
 
@@ -26,3 +27,30 @@ class Block:
             self.nonce = str(int(self.nonce) + random.randint(1, 10))
             hash_ = sha256(self.concat().encode('utf-8'))
         return hash_.hexdigest()
+
+class Blockchain:
+    def __init__(self):
+        self.blocks = []
+        self.address = 0
+        self.addresses = [5000, 5001, 5002]
+
+    def new_block(self, index, prev_hash):
+        return Block(index, prev_hash)
+
+    def add_block(self, block):
+        self.blocks.append(block)
+
+    def chain_clean(self, index):
+        while len(self.blocks) > index:
+            self.blocks.pop()
+
+    def new_chain(self, dat):
+        dat = dat[1:-1]
+        dat = dat.split("}, {")
+        self.blocks = []
+        for i in dat:
+            i = i.strip("{")
+            i = i.strip("}")
+            i = "{" + i + "}"
+            i = i.replace("\'", "\"")
+            self.add_block(json.loads(i))
